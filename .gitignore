@@ -1,0 +1,8 @@
+# eclipse...
+.settings
+.classpath
+.project
+
+# PMD / checkstyle
+reports
+.pmd

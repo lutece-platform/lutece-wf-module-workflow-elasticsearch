@@ -1,0 +1,44 @@
+<link href="css/plugins/workflow/modules/elasticsearch/elasticsearch.css" rel="stylesheet"/>
+
+<#function isSelected class default_values >
+    <#if default_values?has_content>
+        <#list default_values as default_value>
+            <#if default_value=entry>       
+                <#return true>
+            </#if>
+        </#list>
+    </#if>
+ <#return false>
+</#function>
+
+<div>
+    <h2> #i18n{module.workflow.elasticsearch.task_config.title}</h2>
+        <div class="control-group">
+            <label class="control-label text-left label-medium" for="index">#i18n{module.workflow.elasticsearch.task_config.label_index} * :</label> 
+            <div class="controls">
+                <#if config?exists && config.index??>
+                          <input type="text" name="index" id="index" size="80" value="${config.index}"  maxlength="255"/>
+                <#else>
+                        <input type="text" name="index" id="index" size="80" value=""  maxlength="255"/>
+                </#if>
+                <span class="help-block">#i18n{module.workflow.elasticsearch.task_config.label_index}</span>
+            </div>
+        </div>
+        
+        
+        <#if beans??>  
+                <div class="highlight-box">
+                  <#if beans?size = 0>
+                        #i18n{module.workflow.elasticsearch.task_config.classes_noclasses}
+                    <#else>                 
+                            <label class="control-label text-left label-large" for="bean_name">#i18n{module.workflow.elasticsearch.task_config.label_bean_name} : *</label>
+                            <select id ="bean_name" name="bean_name">
+                              <#list beans?keys as name>
+                                <option value="${name}">${beans[name]["description"]}</option>
+                            </#list>
+                            </select>
+                    </#if>      
+                </div>       
+        </#if>      
+        </div>
+</div>
