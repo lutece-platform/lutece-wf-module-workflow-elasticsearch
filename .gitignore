@@ -6,3 +6,6 @@
 # PMD / checkstyle
 reports
 .pmd
+
+# compile
+target

@@ -56,7 +56,7 @@ public class TaskElasticSearchConfigDAO implements ITaskConfigDAO<TaskElasticSea
     {
         DAOUtil dao = new DAOUtil( SQL_QUERY_DELETE, WorkflowElasticSearchPlugin.getPlugin(  ) );
         dao.setInt( 1, nId );
-        dao.executeQuery(  );
+        dao.executeUpdate( );
         dao.free(  );
     }
 

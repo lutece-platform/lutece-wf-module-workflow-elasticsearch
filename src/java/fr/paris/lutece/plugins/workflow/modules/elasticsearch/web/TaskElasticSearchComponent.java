@@ -42,6 +42,7 @@ import javax.inject.Named;
 import javax.servlet.http.HttpServletRequest;
 
 import fr.paris.lutece.plugins.workflow.modules.elasticsearch.business.TaskElasticSearchConfig;
+import fr.paris.lutece.plugins.workflow.modules.elasticsearch.service.WorkflowElasticSearchPlugin;
 import fr.paris.lutece.plugins.workflow.modules.elasticsearch.service.WorkflowElasticSearchService;
 import fr.paris.lutece.plugins.workflow.web.task.NoFormTaskComponent;
 import fr.paris.lutece.plugins.workflowcore.service.config.ITaskConfigService;
@@ -51,6 +52,7 @@ import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.portal.service.template.AppTemplateService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.util.html.HtmlTemplate;
 
 
@@ -78,6 +80,7 @@ public class TaskElasticSearchComponent extends NoFormTaskComponent
     // Messages
     private static final String MESSAGE_MANDATORY_FIELD = "module.workflow.elasticsearch.task_config.mandatory_field";
     private static final String MESSAGE_BAD_BEAN_NAME = "module.workflow.elasticsearch.task_config.bad_bean_name";
+    private static final String MESSAGE_NO_PROPERTIES_SET = "module.workflow.elasticsearch.task_config.no_properties_set";
     
     //Service
     @Inject
@@ -91,9 +94,15 @@ public class TaskElasticSearchComponent extends NoFormTaskComponent
     public String getDisplayConfigForm( HttpServletRequest request, Locale locale,
             ITask task )
     {
+        String strHost = AppPropertiesService.getProperty( WorkflowElasticSearchPlugin.PROPERTY_SERVER_HOST, null );
+        int nPort = AppPropertiesService.getPropertyInt( WorkflowElasticSearchPlugin.PROPERTY_SERVER_PORT, 0 );
         TaskElasticSearchConfig config = _taskElasticSearchConfigService.findByPrimaryKey( task.getId( ) );
         Map<String, Object> model = new HashMap<String, Object>(  );
-        model.put( MARK_BEAN, WorkflowElasticSearchService.getClassInformations( ) );
+
+        if ( strHost != null && ! strHost.isEmpty( ) && nPort != 0 )
+        {
+            model.put( MARK_BEAN, WorkflowElasticSearchService.getClassInformations( ) );
+        }
         model.put( MARK_CONFIG, config );
         
         HtmlTemplate template = AppTemplateService.getTemplate( TEMPLATE_TASK_ELASTICSEARCH_CONFIG, locale, model );
@@ -123,6 +132,14 @@ public class TaskElasticSearchComponent extends NoFormTaskComponent
     @Override
     public String doSaveConfig( HttpServletRequest request, Locale locale, ITask task )
     {
+        // check if properties are set...
+        String strHost = AppPropertiesService.getProperty( WorkflowElasticSearchPlugin.PROPERTY_SERVER_HOST, null );
+        int nPort = AppPropertiesService.getPropertyInt( WorkflowElasticSearchPlugin.PROPERTY_SERVER_PORT, 0 );
+        if ( strHost != null && ! strHost.isEmpty( ) && nPort != 0 )
+        {
+            return AdminMessageService.getMessageUrl( request, MESSAGE_NO_PROPERTIES_SET, AdminMessage.TYPE_ERROR );
+        }
+        
         TaskElasticSearchConfig config = _taskElasticSearchConfigService.findByPrimaryKey( task.getId( ) );
         Boolean bIsNew = Boolean.FALSE;
         

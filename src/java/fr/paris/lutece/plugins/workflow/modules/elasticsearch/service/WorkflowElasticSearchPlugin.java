@@ -44,6 +44,8 @@ public class WorkflowElasticSearchPlugin extends Plugin
     
     public static final String PLUGIN_NAME = "workflow-elasticsearch";
     public static final String TRANSACTION_MANAGER = PLUGIN_NAME + ".transactionManager";
+    public static final String PROPERTY_SERVER_HOST = "workflow-elasticsearch.server_host";
+    public static final String PROPERTY_SERVER_PORT = "workflow-elasticsearch.server_port";
 
     /* (non-Javadoc)
      * @see fr.paris.lutece.portal.service.plugin.Plugin#init()

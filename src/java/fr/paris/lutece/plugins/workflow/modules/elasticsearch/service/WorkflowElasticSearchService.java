@@ -97,11 +97,11 @@ public final class WorkflowElasticSearchService
      * @param strBean the Bean ID to add
      * @param classInformation the classInformation to add
      */
-    public static void addClassInformation( String strBean, HashMap<String, String> classInformation )
+    public static void addClassInformation( String strBean, Map<String, String> classInformation )
     {
         if ( strBean != null )
         {
-            WorkflowElasticSearchService._classInformations.put( strBean, classInformation );
+            WorkflowElasticSearchService._classInformations.put( strBean, (HashMap) classInformation );
         }
     }
 

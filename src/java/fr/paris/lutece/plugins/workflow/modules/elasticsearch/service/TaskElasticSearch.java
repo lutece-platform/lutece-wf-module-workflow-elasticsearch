@@ -56,6 +56,7 @@ import fr.paris.lutece.plugins.workflowcore.service.resource.IResourceHistorySer
 import fr.paris.lutece.plugins.workflowcore.service.task.SimpleTask;
 import fr.paris.lutece.portal.service.i18n.I18nService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 
 /**
  * Class TaskElasticSearch
@@ -110,7 +111,9 @@ _taskElasticSearchConfigService.remove( this.getId( ) );
         // index to Elastic Search
         if ( myObject != null )
         {
-            Client client = new TransportClient( ).addTransportAddress( new InetSocketTransportAddress( "localhost", 9300 ) ); 
+            String strHost = AppPropertiesService.getProperty( WorkflowElasticSearchPlugin.PROPERTY_SERVER_HOST );
+                    int nPort = Integer.parseInt( AppPropertiesService.getProperty( WorkflowElasticSearchPlugin.PROPERTY_SERVER_PORT ) );
+            Client client = new TransportClient( ).addTransportAddress( new InetSocketTransportAddress( strHost, nPort ) ); 
             ObjectMapper objectMapper = new ObjectMapper();
             String strSource = "";
             try
