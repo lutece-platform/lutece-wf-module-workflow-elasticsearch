@@ -34,6 +34,8 @@
 package fr.paris.lutece.plugins.workflow.modules.elasticsearch.service;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -46,7 +48,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.transport.client.PreBuiltTransportClient;
 
 import fr.paris.lutece.plugins.workflow.modules.elasticsearch.business.IWorkflowElasticSearchHome;
 import fr.paris.lutece.plugins.workflow.modules.elasticsearch.business.TaskElasticSearchConfig;
@@ -113,7 +117,6 @@ _taskElasticSearchConfigService.remove( this.getId( ) );
         {
             String strHost = AppPropertiesService.getProperty( WorkflowElasticSearchPlugin.PROPERTY_SERVER_HOST );
                     int nPort = Integer.parseInt( AppPropertiesService.getProperty( WorkflowElasticSearchPlugin.PROPERTY_SERVER_PORT ) );
-            Client client = new TransportClient( ).addTransportAddress( new InetSocketTransportAddress( strHost, nPort ) ); 
             ObjectMapper objectMapper = new ObjectMapper();
             String strSource = "";
             try
@@ -133,11 +136,20 @@ _taskElasticSearchConfigService.remove( this.getId( ) );
                 strSource = "{}";
             } 
             
-            // preparing indexation
-            IndexRequestBuilder index = client.prepareIndex( config.getIndex( ), "simple" )
-                    .setId( Integer.toString( history.getId( ) ) )
-                    .setSource( strSource );
-            index.execute( ).actionGet( );
+            try
+            {
+                Client client = new PreBuiltTransportClient( Settings.EMPTY )
+                        .addTransportAddress( new InetSocketTransportAddress( InetAddress.getByName( strHost ), nPort ) );
+                // preparing indexation
+                IndexRequestBuilder index = client.prepareIndex( config.getIndex( ), "simple" )
+                        .setId( Integer.toString( history.getId( ) ) )
+                        .setSource( strSource );
+                index.execute( ).actionGet( );
+            }
+            catch( UnknownHostException e )
+            {
+                throw new RuntimeException( e );
+            }
         }
     }
 }
